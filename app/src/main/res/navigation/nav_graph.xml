@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/secondFragment">
+
+
+    <fragment
+        android:id="@+id/secondFragment"
+        android:name="com.example.myapplication.ui.SecondFragment"
+        android:label="Home Fragment"
+        tools:layout="@layout/fragment_second" >
+        <action
+            android:id="@+id/action_secondFragment_to_dataShown"
+            app:destination="@id/dataShown" />
+        <action
+            android:id="@+id/action_secondFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_secondFragment_to_customCameraFragment"
+            app:destination="@id/customCameraFragment" />
+        <action
+            android:id="@+id/action_secondFragment_to_sufraceViewCamera"
+            app:destination="@id/sufraceViewCamera" />
+    </fragment>
+    <fragment
+        android:id="@+id/dataShown"
+        android:name="com.example.myapplication.ui.DataShown"
+        android:label="Room DB"
+        tools:layout="@layout/fragment_data_shown" />
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.example.myapplication.ui.GalleryFragment"
+        android:label="Gallery" />
+    <fragment
+        android:id="@+id/customCameraFragment"
+        android:name="com.example.myapplication.ui.CustomCameraFragment"
+        android:label="CustomCameraFragment" />
+    <fragment
+        android:id="@+id/sufraceViewCamera"
+        android:name="com.example.myapplication.ui.SufraceViewCamera"
+        android:label="SufraceViewCamera" >
+        <action
+            android:id="@+id/action_sufraceViewCamera_to_previewImage"
+            app:destination="@id/previewImage" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewImage"
+        android:name="com.example.myapplication.ui.PreviewImage"
+        android:label="PreviewImage" />
+
+
+</navigation>

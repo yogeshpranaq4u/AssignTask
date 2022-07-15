@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.SecondFragment">
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/third_fragment"
+        android:layout_margin="10dp"
+        android:text="Click to navigate" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/galleryFragment"
+        app:layout_constraintTop_toBottomOf="@id/third_fragment"
+        android:layout_margin="10dp"
+        android:text="Gallery" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/opencamera"
+        app:layout_constraintTop_toBottomOf="@id/galleryFragment"
+        android:layout_margin="10dp"
+        android:text="Camera" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toBottomOf="@id/opencamera"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/getImage"
+        android:visibility="gone"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/customCamera"
+        app:layout_constraintTop_toBottomOf="@id/getImage"
+        android:layout_margin="10dp"
+        android:text="CustomCamera" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surfaceCamera"
+        app:layout_constraintTop_toBottomOf="@id/customCamera"
+        android:layout_margin="10dp"
+        android:text="Surface Camera" />
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
