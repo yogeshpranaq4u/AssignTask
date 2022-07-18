@@ -1,29 +1,24 @@
 package com.example.myapplication.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.*
-import android.media.Image
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.*
+import androidx.camera.camera2.internal.compat.workaround.TargetAspectRatio.RATIO_4_3
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -33,11 +28,6 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import com.example.myapplication.databinding.CustomCameraFragmentBinding
 import com.example.myapplication.utils.Constant
-import com.google.android.gms.tasks.Task
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,9 +38,7 @@ class CustomCameraFragment : Fragment() {
     var imageCapture: ImageCapture? = null
     private lateinit var objectDirectory: File
     private var autoFocus: Boolean? = false
-    private var wordFenceRect = Rect()
     private var displaymetrics: DisplayMetrics? = null
-    private lateinit var cropIntent: Intent
     private lateinit var savedUri:Uri
 
     val handler = Handler(Looper.getMainLooper())
@@ -143,15 +131,13 @@ class CustomCameraFragment : Fragment() {
         val cameraProvider = activity?.let { ProcessCameraProvider.getInstance(it) }
         cameraProvider?.addListener({
             val cameraProviderFuture: ProcessCameraProvider = cameraProvider.get()
-            val preview = Preview.Builder().setTargetResolution(Size(displaymetrics?.widthPixels!!,
-                displaymetrics?.heightPixels!!
-            )).build().also { mpreview ->
+            val preview = Preview.Builder().setTargetAspectRatio(RATIO_4_3).build().also { mpreview ->
                 mpreview.setSurfaceProvider(
                     binding?.cameraPreview?.surfaceProvider
                 )
             }
 
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = ImageCapture.Builder().setTargetAspectRatio(RATIO_4_3).build()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             try {
                 cameraProviderFuture.unbindAll()
@@ -200,28 +186,21 @@ class CustomCameraFragment : Fragment() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo saved"
-                    if (savedUri != null) {
-                        cropImages()
-//                        binding?.viewImage?.let {
-//                            Glide
-//                                .with(context!!)
-//                                .load(savedUri)
-//                                .centerCrop()
-//                                .into(it)
-//                        }
-                        val matrix = ColorMatrix()
-                        matrix.setSaturation(0.2f)
-
-                        val filter = ColorMatrixColorFilter(matrix)
-                        binding?.viewImage?.setColorFilter(filter)
-                        binding?.clickImage?.visibility = View.GONE
-                        binding?.cameraPreview?.visibility = View.GONE
-                        Toast.makeText(context, "$msg -- $savedUri", Toast.LENGTH_SHORT).show()
-                    } else {
-                        binding?.clickImage?.visibility = View.VISIBLE
-                        binding?.cameraPreview?.visibility = View.VISIBLE
-                        binding?.viewImage?.visibility = View.GONE
+                    binding?.viewImage?.let {
+                        Glide
+                            .with(context!!)
+                            .load(savedUri)
+                            .centerCrop()
+                            .into(it)
                     }
+                    val matrix = ColorMatrix()
+                    matrix.setSaturation(0.2f)
+
+                    val filter = ColorMatrixColorFilter(matrix)
+                    binding?.viewImage?.setColorFilter(filter)
+                    binding?.clickImage?.visibility = View.GONE
+                    binding?.cameraPreview?.visibility = View.GONE
+                    Toast.makeText(context, "$msg -- $savedUri", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -239,47 +218,5 @@ class CustomCameraFragment : Fragment() {
     private fun stopAutoClick(){
         handler.removeCallbacks(r)
 
-    }
-
-
-
-
-
-    private fun cropImages(){
-        /**set crop image*/
-        try {
-            cropIntent = Intent("com.android.camera.action.CROP")
-            cropIntent.setDataAndType(savedUri,"image/*")
-            cropIntent.putExtra("crop",true)
-            cropIntent.putExtra("outputX",180)
-            cropIntent.putExtra("outputY",180)
-            cropIntent.putExtra("aspectX",3)
-            cropIntent.putExtra("aspectY",4)
-            cropIntent.putExtra("scaleUpIfNeeded",true)
-            cropIntent.putExtra("return-data",true)
-            startActivityForResult(cropIntent,1)
-
-        }catch (e: ActivityNotFoundException){
-            e.printStackTrace()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 0 && resultCode == RESULT_OK){
-            cropImages()
-        } else if (requestCode == 2){
-            if (data != null){
-                savedUri = data.data!!
-                cropImages()
-            }
-        }
-        else if (requestCode == 1){
-            if (data != null){
-                val bundle = data.extras
-                val bitmap = bundle!!.getParcelable<Bitmap>("data")
-                binding?.viewImage?.setImageBitmap(bitmap)
-            }
-        }
     }
 }
